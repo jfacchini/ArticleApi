@@ -2,6 +2,7 @@
 
 namespace Jfacchini\Bundle\BlogBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -35,6 +36,17 @@ class Article
      */
     private $content;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Jfacchini\Bundle\BlogBundle\Comment", mappedBy="article")
+     */
+    private $comments;
+
+    public function __construct()
+    {
+        $this->comments = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -92,6 +104,28 @@ class Article
     public function getContent()
     {
         return $this->content;
+    }
+
+
+    /**
+     * Add a new comment
+     *
+     * @param Comment $comment
+     * @return Article
+     */
+    public function addComment(Comment $comment)
+    {
+        $this->comments->add($comment);
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }
 
