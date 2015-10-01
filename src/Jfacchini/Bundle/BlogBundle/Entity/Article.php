@@ -39,14 +39,14 @@ class Article
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Jfacchini\Bundle\BlogBundle\Comment", mappedBy="article")
+     * @ORM\OneToMany(targetEntity="Jfacchini\Bundle\BlogBundle\Entity\Comment", mappedBy="article")
      */
     private $comments;
 
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Jfacchini\Bundle\BlogBundle\Rate", mappedBy="article")
+     * @ORM\OneToMany(targetEntity="Jfacchini\Bundle\BlogBundle\Entity\Rate", mappedBy="article")
      */
     private $rates;
 

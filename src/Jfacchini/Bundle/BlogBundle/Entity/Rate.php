@@ -28,6 +28,13 @@ class Rate
      */
     private $value;
 
+    /**
+     * @var Article
+     *
+     * @ORM\ManyToOne(targetEntity="Jfacchini\Bundle\BlogBundle\Entity\Article")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="id")
+     */
+    private $article;
 
     /**
      * Get id
@@ -61,6 +68,25 @@ class Rate
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * @return Article
+     */
+    public function getArticle()
+    {
+        return $this->article;
+    }
+
+    /**
+     * @param Article $article
+     * @return Rate
+     */
+    public function setArticle(Article $article)
+    {
+        $this->article = $article;
+
+        return $this;
     }
 }
 

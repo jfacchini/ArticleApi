@@ -28,6 +28,13 @@ class Comment
      */
     private $content;
 
+    /**
+     * @var Article
+     *
+     * @ORM\ManyToOne(targetEntity="Jfacchini\Bundle\BlogBundle\Entity\Article")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="id")
+     */
+    private $article;
 
     /**
      * Get id
@@ -61,6 +68,24 @@ class Comment
     public function getContent()
     {
         return $this->content;
+    }
+
+    /**
+     * @return Article
+     */
+    public function getArticle()
+    {
+        return $this->article;
+    }
+
+    /**
+     * @param Article $article
+     * @return Comment
+     */
+    public function setArticle(Article $article)
+    {
+        $this->article = $article;
+        return $this;
     }
 }
 
