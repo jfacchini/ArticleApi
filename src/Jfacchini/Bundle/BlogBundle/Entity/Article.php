@@ -43,9 +43,17 @@ class Article
      */
     private $comments;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Jfacchini\Bundle\BlogBundle\Rate", mappedBy="article")
+     */
+    private $rates;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->rates    = new ArrayCollection();
     }
 
     /**
@@ -127,5 +135,25 @@ class Article
     {
         return $this->comments;
     }
-}
 
+    /**
+     * Add a new Rate
+     *
+     * @param Rate $rate
+     * @return Article
+     */
+    public function addRate(Rate $rate)
+    {
+        $this->rates->add($rate);
+
+        return $this;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getRates()
+    {
+        return $this->rates;
+    }
+}
