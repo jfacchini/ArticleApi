@@ -2,70 +2,117 @@
 
 namespace Jfacchini\Bundle\BlogBundle\Tests;
 
-use Exception;
 use Jfacchini\Bundle\BlogBundle\Entity\Article;
 use Jfacchini\Bundle\BlogBundle\Entity\Comment;
 use Jfacchini\Bundle\BlogBundle\Entity\Rate;
-use Jfacchini\Bundle\BlogBundle\Service\ArticleManager;
-use Jfacchini\Bundle\BlogBundle\Service\CommentManager;
-use Jfacchini\Bundle\BlogBundle\Service\RateManager;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ArticleTest extends \PHPUnit_Framework_TestCase
+class ArticleTest extends KernelTestCase
 {
+    /** @var ContainerInterface */
+    private static $container;
+
+    public static function setUpBeforeClass()
+    {
+        $kernel = static::createKernel();
+        $kernel->boot();
+
+        self::$container = $kernel->getContainer();
+    }
+
     public function testCreateAnArticle()
     {
-        $expectedArticle = $this->createArticle();
+        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        $validator = self::$container->get('validator');
+        $articleManager = self::$container->get('blog_article.article_manager');
 
-        $articleManager = new ArticleManager();
-        $newArticle = $articleManager->create('New title', 'New article content');
+        // Test validation : title and content should not be null
+        $article = new Article();
+        $errors = $validator->validate($article);
+        $this->assertCount(2, $errors);
 
-        $this->assertEquals($expectedArticle, $newArticle);
+        $article = $this->createArticle();
+        $errors = $validator->validate($article);
+        $this->assertCount(0, $errors);
+
+        // Test that an article has a created date and has been persisted
+        $articleManager->create($article);
+        $this->assertNotNull($article->getCreatedDate());
+        //TODO: test if the created date is today.
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($article));
     }
 
     public function testCommentAnArticle()
     {
-        $expectedComment = $this->createComment();
+        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        $validator = self::$container->get('validator');
+        $articleManager = self::$container->get('blog_article.article_manager');
+        $commentManager = self::$container->get('blog_article.comment_manager');
 
-        $commentManager = new CommentManager();
-        $newComment = $commentManager->create('A new comment to an article');
+        // Test validation : content should not be null
+        $comment = new Comment();
+        $errors = $validator->validate($comment);
+        $this->assertCount(1, $errors);
 
-        $this->assertEquals($expectedComment, $newComment);
+        $comment = $this->createComment();
+        $errors = $validator->validate($comment);
+        $this->assertCount(0, $errors);
 
-        $articleManager = new ArticleManager();
-        $articleManager->setCommentManager($commentManager);
+        $commentManager->create($comment);
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($comment));
+
+        $comment = $this->createComment();
         $article = $this->createArticle();
-        $articleManager->addNewComment($article, 'A new comment to an article');
+        $articleManager->addNewComment($article, $comment);
 
         $this->assertEquals(1, $article->getComments()->count());
-        $this->assertEquals($expectedComment, $article->getComments()->get(0));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($comment));
     }
 
     public function testRateAnArticle()
     {
-        $expectedRate = (new Rate())->setValue(5);
+        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        $validator = self::$container->get('validator');
+        $articleManager = self::$container->get('blog_article.article_manager');
+        $rateManager = self::$container->get('blog_article.rate_manager');
 
-        $rateManager = new RateManager();
-        try {
-            $rate = $rateManager->create('a');
-            $this->assertFalse(true);
-        } catch (Exception $e) {
-            $this->assertTrue(true);
-        }
+        // Test validation : value shoult not be null
+        $rate = new Rate();
+        $errors = $validator->validate($rate);
+        $this->assertCount(1, $errors);
+        // The value type must be an integer
+        $rate->setValue('a');
+        $errors = $validator->validate($rate);
+        $this->assertCount(1, $errors);
+        $rate->setValue(4.2);
+        $errors = $validator->validate($rate);
+        $this->assertCount(1, $errors);
+        // The value range must be [0 - 5]
+        $rate->setValue(6);
+        $errors = $validator->validate($rate);
+        $this->assertCount(1, $errors);
+        $rate->setValue(-1);
+        $errors = $validator->validate($rate);
+        $this->assertCount(1, $errors);
 
-        $rate = $rateManager->create(5);
-        $this->assertEquals($expectedRate, $rate);
+        $rate = $this->createRate();
+        $errors = $validator->validate($rate);
+        $this->assertCount(0, $errors);
 
-        $articleManager = new ArticleManager();
-        $articleManager->setRateManager($rateManager);
+        $rateManager->create($rate);
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($rate));
 
         $article = $this->createArticle();
         $this->assertNull($articleManager->getRatesAverage($article));
 
-        $articleManager->addNewRate($article, 5);
+        $rate = $this->createRate();
+        $articleManager->addNewRate($article, $rate);
         $this->assertEquals(1, $article->getRates()->count());
-        $this->assertEquals($expectedRate, $article->getRates()->get(0));
+        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($rate));
 
-        $articleManager->addNewRate($article, 4);
+        $rate = $this->createRate()->setValue(4);
+        $articleManager->addNewRate($article, $rate);
         $this->assertEquals(4.5, $articleManager->getRatesAverage($article));
     }
 
@@ -91,6 +138,18 @@ class ArticleTest extends \PHPUnit_Framework_TestCase
     {
         return (new Comment())
             ->setContent('A new comment to an article')
+        ;
+    }
+
+    /**
+     * Create a new rate
+     *
+     * @return Rate
+     */
+    private function createRate()
+    {
+        return (new Rate())
+            ->setValue(5)
         ;
     }
 }

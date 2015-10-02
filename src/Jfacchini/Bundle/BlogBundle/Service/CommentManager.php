@@ -2,6 +2,7 @@
 
 namespace Jfacchini\Bundle\BlogBundle\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Jfacchini\Bundle\BlogBundle\Entity\Comment;
 
 /**
@@ -12,16 +13,21 @@ use Jfacchini\Bundle\BlogBundle\Entity\Comment;
  */
 class CommentManager
 {
-    /**
-     * Create a new Comment entity with a given content
-     *
-     * @param string $content Content of the comment
-     * @return Comment
-     */
-    public function create($content)
+    /** @var EntityManagerInterface */
+    private $em;
+
+    public function __construct(EntityManagerInterface $em)
     {
-        return (new Comment())
-            ->setContent($content)
-        ;
+        $this->em = $em;
+    }
+
+    /**
+     * Create a new Comment, persist it
+     *
+     * @param Comment $comment
+     */
+    public function create(Comment $comment)
+    {
+        $this->em->persist($comment);
     }
 }

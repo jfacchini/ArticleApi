@@ -4,13 +4,23 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <!--
     <services>
-        <service id="blog.example" class="Jfacchini\Bundle\BlogBundle\Example">
-            <argument type="service" id="service_id" />
-            <argument>plain_value</argument>
-            <argument>%parameter_name%</argument>
+        <service id="blog_article.comment_manager" class="Jfacchini\Bundle\BlogBundle\Service\CommentManager">
+            <argument type="service" id="doctrine.orm.default_entity_manager" />
+        </service>
+
+        <service id="blog_article.rate_manager" class="Jfacchini\Bundle\BlogBundle\Service\RateManager">
+            <argument type="service" id="doctrine.orm.default_entity_manager" />
+        </service>
+
+        <service id="blog_article.article_manager" class="Jfacchini\Bundle\BlogBundle\Service\ArticleManager">
+            <argument type="service" id="doctrine.orm.default_entity_manager" />
+            <call method="setCommentManager">
+                <argument type="service" id="blog_article.comment_manager" />
+            </call>
+            <call method="setRateManager">
+                <argument type="service" id="blog_article.rate_manager" />
+            </call>
         </service>
     </services>
-    -->
 </container>

@@ -2,16 +2,26 @@
 
 namespace Jfacchini\Bundle\BlogBundle\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Jfacchini\Bundle\BlogBundle\Entity\Article;
+use Jfacchini\Bundle\BlogBundle\Entity\Comment;
 use Jfacchini\Bundle\BlogBundle\Entity\Rate;
 
 class ArticleManager
 {
+    /** @var EntityManagerInterface */
+    private $em;
+
     /** @var CommentManager */
     private $commentManager;
 
     /** @var RateManager */
     private $rateManager;
+
+    public function __construct(EntityManagerInterface $em)
+    {
+        $this->em = $em;
+    }
 
     /**
      * @param CommentManager $commentManager
@@ -32,16 +42,14 @@ class ArticleManager
     /**
      * Create a new article with a given title and content
      *
-     * @param  string $title   Article title
-     * @param  string $content Article content
-     * @return Article
+     * @param Article $article
      */
-    public function create($title, $content)
+    public function create(Article $article)
     {
-        return (new Article())
-            ->setTitle($title)
-            ->setContent($content)
-        ;
+        // The created date can be set on PrePersist event
+        // but this is an example for instructions that can be done while creating the Object
+        $article->setCreatedDate(new \DateTime());
+        $this->em->persist($article);
     }
 
     /**
@@ -50,11 +58,11 @@ class ArticleManager
      * @param Article $article
      * @param int $comment
      */
-    public function addNewComment(Article $article, $comment)
+    public function addNewComment(Article $article, Comment $comment)
     {
-        $article->addComment(
-            $this->commentManager->create($comment)
-        );
+        $article->addComment($comment);
+        //TODO: Use cascade persist into article instead
+        $this->commentManager->create($comment);
     }
 
     /**
@@ -63,11 +71,11 @@ class ArticleManager
      * @param Article $article
      * @param int $value
      */
-    public function addNewRate(Article $article, $value)
+    public function addNewRate(Article $article, Rate $rate)
     {
-        $article->addRate(
-            $this->rateManager->create($value)
-        );
+        $article->addRate($rate);
+        //TODO: Use cascade persist into article instead
+        $this->rateManager->create($rate);
     }
 
     /**

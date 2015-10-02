@@ -3,6 +3,7 @@
 namespace Jfacchini\Bundle\BlogBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Rate
@@ -25,6 +26,11 @@ class Rate
      * @var integer
      *
      * @ORM\Column(name="value", type="integer")
+     *
+     * @Assert\NotBlank()
+     * @Assert\Type(type="int")
+     * @Assert\GreaterThanOrEqual(0)
+     * @Assert\LessThanOrEqual(5)
      */
     private $value;
 

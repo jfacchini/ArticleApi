@@ -4,6 +4,7 @@ namespace Jfacchini\Bundle\BlogBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Article
@@ -26,6 +27,8 @@ class Article
      * @var string
      *
      * @ORM\Column(name="string", type="string", length=255)
+     *
+     * @Assert\NotBlank()
      */
     private $title;
 
@@ -33,8 +36,17 @@ class Article
      * @var string
      *
      * @ORM\Column(name="content", type="text")
+     *
+     * @Assert\NotBlank()
      */
     private $content;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_date", type="date")
+     */
+    private $createdDate;
 
     /**
      * @var ArrayCollection
@@ -114,6 +126,24 @@ class Article
         return $this->content;
     }
 
+    /**
+     * @param \DateTime $date
+     * @return Article
+     */
+    public function setCreatedDate(\DateTime $date)
+    {
+        $this->createdDate = $date;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedDate()
+    {
+        return $this->createdDate;
+    }
 
     /**
      * Add a new comment
@@ -123,6 +153,7 @@ class Article
      */
     public function addComment(Comment $comment)
     {
+        $comment->setArticle($this);
         $this->comments->add($comment);
 
         return $this;
@@ -144,6 +175,7 @@ class Article
      */
     public function addRate(Rate $rate)
     {
+        $rate->setArticle($this);
         $this->rates->add($rate);
 
         return $this;
