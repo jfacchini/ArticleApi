@@ -15,6 +15,7 @@
 
         <service id="blog_article.article_manager" class="Jfacchini\Bundle\BlogBundle\Service\ArticleManager">
             <argument type="service" id="doctrine.orm.default_entity_manager" />
+            <argument type="service" id="mailer" />
             <call method="setCommentManager">
                 <argument type="service" id="blog_article.comment_manager" />
             </call>

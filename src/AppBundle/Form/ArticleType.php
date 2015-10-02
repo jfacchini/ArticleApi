@@ -13,7 +13,10 @@ class ArticleType extends AbstractType
         $builder
             ->add('title', 'text', [
                 'label' => 'Title', //TODO: need to find a way to translate it automatically
-                'required' => false,
+                'required' => false, //Display errors against symfony constraints
+            ])
+            ->add('authorEmail', 'email', [
+                'label' => 'Your mail',
             ])
             ->add('content', 'textarea', [
                 'label' => 'Content',

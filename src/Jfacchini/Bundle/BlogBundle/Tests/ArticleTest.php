@@ -30,7 +30,7 @@ class ArticleTest extends KernelTestCase
         // Test validation : title and content should not be null
         $article = new Article();
         $errors = $validator->validate($article);
-        $this->assertCount(2, $errors);
+        $this->assertCount(3, $errors);
 
         $article = $this->createArticle();
         $errors = $validator->validate($article);
@@ -122,7 +122,7 @@ class ArticleTest extends KernelTestCase
         $em = self::$container->get('doctrine.orm.default_entity_manager');
         $repository = $em->getRepository('BlogBundle:Article');
 
-        $sql = 'SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.content AS content_2, a0_.created_date AS created_date_3, c1_.id AS id_4, c1_.content AS content_5, c1_.article_id AS article_id_6 FROM article a0_ INNER JOIN comment c1_ ON a0_.id = c1_.article_id WHERE a0_.id = ?';
+        $sql = 'SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.content AS content_2, a0_.created_date AS created_date_3, a0_.author_email AS author_email_4, c1_.id AS id_5, c1_.content AS content_6, c1_.createdDate AS createdDate_7, c1_.article_id AS article_id_8 FROM article a0_ INNER JOIN comment c1_ ON a0_.id = c1_.article_id WHERE a0_.id = ?';
         $this->assertEquals($sql, $repository->findByIdWithAllCommentsQuery(1)->getSQL());
 
         //TODO: Mock the repository to retrieve an article with comments
@@ -138,6 +138,7 @@ class ArticleTest extends KernelTestCase
         return (new Article())
             ->setTitle('New title')
             ->setContent('New article content')
+            ->setAuthorEmail('test@domain.tld')
         ;
     }
 

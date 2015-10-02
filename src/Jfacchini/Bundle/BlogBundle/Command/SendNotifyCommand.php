@@ -14,7 +14,7 @@ class SendNotifyCommand extends ContainerAwareCommand
     {
         $this
             ->setName('blog:notify:user')
-            ->setDescription('Send a notify to the write of the given article id if he has comments for the last 24 hours')
+            ->setDescription('Send a notify to the writer of the given article id if he has comments for the last 24 hours')
             ->addArgument('article', InputArgument::REQUIRED, 'The article id to find')
         ;
     }
@@ -29,12 +29,13 @@ class SendNotifyCommand extends ContainerAwareCommand
             ->findArticleByIdWithCommentsFor24Hours($articleId)
         ;
 
-        if (!is_null($article)) {
-            /** @var Comment $comment */
-            foreach ($article->getComments() as $comment)
-            {
-                $output->writeln('comment: '.$comment->getContent());
-            }
+        if (!is_null($article) && $article->getComments()->count() > 0) {
+            $container->get('blog_article.article_manager')
+                ->sendNotifyMailWithComments($article)
+            ;
+            $output->writeln('E-mail has been sent');
+        } else {
+            $output->writeln('No mail to send');
         }
     }
 }

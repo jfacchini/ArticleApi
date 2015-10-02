@@ -35,6 +35,7 @@ class LoadArticleData implements FixtureInterface, ContainerAwareInterface
             ->setTitle('Title test 1')
             ->setContent('Some content for the article 1')
             ->setCreatedDate((new \DateTime())->modify('- 2 day'))
+            ->setAuthorEmail('test@domain.tld')
         ;
         $em->persist($article);
         $em->flush($article);

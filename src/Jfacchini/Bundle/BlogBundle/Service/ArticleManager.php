@@ -6,11 +6,16 @@ use Doctrine\ORM\EntityManagerInterface;
 use Jfacchini\Bundle\BlogBundle\Entity\Article;
 use Jfacchini\Bundle\BlogBundle\Entity\Comment;
 use Jfacchini\Bundle\BlogBundle\Entity\Rate;
+use Swift_Mailer;
+use Swift_Message;
 
 class ArticleManager
 {
     /** @var EntityManagerInterface */
     private $em;
+
+    /** @var Swift_Mailer */
+    private $mailer;
 
     /** @var CommentManager */
     private $commentManager;
@@ -18,9 +23,10 @@ class ArticleManager
     /** @var RateManager */
     private $rateManager;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, Swift_Mailer $mailer)
     {
-        $this->em = $em;
+        $this->em     = $em;
+        $this->mailer = $mailer;
     }
 
     /**
@@ -132,5 +138,26 @@ class ArticleManager
             ->findArticleByIdWithCommentsFor24HoursQuery($id)
             ->getOneOrNullResult()
         ;
+    }
+
+    /**
+     * Send a notification mail to the author
+     *
+     * @param Article $article
+     */
+    public function sendNotifyMailWithComments(Article $article)
+    {
+        $message = Swift_Message::newInstance()
+            ->setSubject('Article notifications')
+            ->setFrom('contact@domain.tld')
+            ->setTo($article->getAuthorEmail())
+            //TODO: setup a mail template
+            ->setBody(sprintf('Hello, you have %d comment(s) for the last 24 hours for the article "%s"',
+                $article->getComments()->count(),
+                $article->getTitle()
+            ))
+        ;
+
+        $this->mailer->send($message);
     }
 }

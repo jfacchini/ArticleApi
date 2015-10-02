@@ -49,6 +49,16 @@ class Article
     private $createdDate;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="author_email", type="string", length=255)
+     *
+     * @Assert\NotBlank()
+     * @Assert\Email()
+     */
+    private $authorEmail;
+
+    /**
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="Jfacchini\Bundle\BlogBundle\Entity\Comment", mappedBy="article")
@@ -143,6 +153,24 @@ class Article
     public function getCreatedDate()
     {
         return $this->createdDate;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthorEmail()
+    {
+        return $this->authorEmail;
+    }
+
+    /**
+     * @param string $authorEmail
+     * @return Article
+     */
+    public function setAuthorEmail($authorEmail)
+    {
+        $this->authorEmail = $authorEmail;
+        return $this;
     }
 
     /**
