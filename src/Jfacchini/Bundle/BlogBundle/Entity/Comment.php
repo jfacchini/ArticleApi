@@ -2,6 +2,7 @@
 
 namespace Jfacchini\Bundle\BlogBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -30,6 +31,13 @@ class Comment
      * @Assert\NotBlank()
      */
     private $content;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(name="createdDate", type="datetime")
+     */
+    private $createdDate;
 
     /**
      * @var Article
@@ -74,6 +82,24 @@ class Comment
     }
 
     /**
+     * @param DateTime $createdDate
+     * @return Comment
+     */
+    public function setCreatedDate(DateTime $createdDate)
+    {
+        $this->createdDate = $createdDate;
+        return $this;
+    }
+
+    /**
+     * return DateTime
+     */
+    public function getCreatedDate()
+    {
+        return $this->createdDate;
+    }
+
+    /**
      * @return Article
      */
     public function getArticle()
@@ -91,4 +117,3 @@ class Comment
         return $this;
     }
 }
-

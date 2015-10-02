@@ -2,6 +2,7 @@
 
 namespace Jfacchini\Bundle\BlogBundle\Service;
 
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Jfacchini\Bundle\BlogBundle\Entity\Comment;
 
@@ -28,6 +29,7 @@ class CommentManager
      */
     public function create(Comment $comment)
     {
+        $comment->setCreatedDate(new DateTime());
         $this->em->persist($comment);
     }
 }

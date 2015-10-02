@@ -60,6 +60,7 @@ class ArticleTest extends KernelTestCase
         $this->assertCount(0, $errors);
 
         $commentManager->create($comment);
+        $this->assertNotNull($comment->getCreatedDate());
         $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($comment));
 
         $comment = $this->createComment();
