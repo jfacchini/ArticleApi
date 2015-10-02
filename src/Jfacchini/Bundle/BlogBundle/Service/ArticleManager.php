@@ -118,4 +118,19 @@ class ArticleManager
             ->findAll()
         ;
     }
+
+    /**
+     * Get an article with its last comments for 24 hours
+     *
+     * @param int $id Article id
+     * @return Article|null Article or null if not found
+     */
+    public function findArticleByIdWithCommentsFor24Hours($id)
+    {
+        return $this->em
+            ->getRepository('BlogBundle:Article')
+            ->findArticleByIdWithCommentsFor24HoursQuery($id)
+            ->getOneOrNullResult()
+        ;
+    }
 }
