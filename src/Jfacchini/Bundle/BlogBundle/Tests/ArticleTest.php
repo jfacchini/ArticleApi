@@ -116,6 +116,17 @@ class ArticleTest extends KernelTestCase
         $this->assertEquals(4.5, $articleManager->getRatesAverage($article));
     }
 
+    public function testRetrieveArticle()
+    {
+        $em = self::$container->get('doctrine.orm.default_entity_manager');
+        $repository = $em->getRepository('BlogBundle:Article');
+
+        $sql = 'SELECT a0_.id AS id_0, a0_.title AS title_1, a0_.content AS content_2, a0_.created_date AS created_date_3, c1_.id AS id_4, c1_.content AS content_5, c1_.article_id AS article_id_6 FROM article a0_ INNER JOIN comment c1_ ON a0_.id = c1_.article_id WHERE a0_.id = ?';
+        $this->assertEquals($sql, $repository->findByIdWithAllCommentsQuery(1)->getSQL());
+
+        //TODO: Mock the repository to retrieve an article with comments
+    }
+
     /**
      * Create a new article
      *

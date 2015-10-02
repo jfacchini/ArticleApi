@@ -96,4 +96,18 @@ class ArticleManager
 
         return $nbRates > 0 ? $sum / $nbRates : null;
     }
+
+    /**
+     * Retrieve an article with all its comments
+     *
+     * @param $id
+     */
+    public function findArticleByIdWithAllComments($id)
+    {
+        return $this->em
+            ->getRepository('BlogBundle:Article')
+            ->findByIdWithAllCommentsQuery($id)
+            ->getResult()
+        ;
+    }
 }
