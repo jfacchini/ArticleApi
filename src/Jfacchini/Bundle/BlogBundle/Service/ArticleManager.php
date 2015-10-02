@@ -110,4 +110,12 @@ class ArticleManager
             ->getResult()
         ;
     }
+
+    public function findAll()
+    {
+        return $this->em
+            ->getRepository('BlogBundle:Article')
+            ->findAll()
+        ;
+    }
 }
